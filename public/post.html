@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Post</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="login-container">
+    <h1>Post Harvest Details</h1>
+    <form onsubmit="submitPost(event)">
+      <input type="text" placeholder="Your Username" required id="user">
+      <input type="text" placeholder="Crop Name" required id="crop">
+      <input type="text" placeholder="Quantity (e.g., 50kg)" required id="quantity">
+      <input type="text" placeholder="Price (e.g., Rs 100/kg)" required id="price">
+      <button type="submit">Post</button>
+    </form>
+    <p><a href="view-posts.html" style="color: #b9e17e;">View All Posts</a></p>
+  </div>
+
+  <script>
+    async function submitPost(e) {
+      e.preventDefault();
+      const postData = {
+        user: document.getElementById('user').value,
+        crop: document.getElementById('crop').value,
+        quantity: document.getElementById('quantity').value,
+        price: document.getElementById('price').value
+      };
+
+      const res = await fetch('/api/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(postData)
+      });
+
+      const data = await res.json();
+      alert(data.message || data.error);
+      if (res.ok) window.location.href = 'view-posts.html';
+    }
+  </script>
+</body>
+</html>
