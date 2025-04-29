@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Post</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #1f3f32;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 15px;
+      color: white;
+    }
+
+    .login-container {
+      background-color: #2b5445;
+      padding: 25px 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    input {
+      background-color: #eee;
+      color: #333;
+    }
+
+    input[type="file"] {
+      background-color: #fff;
+      padding: 8px;
+    }
+
+    button {
+      background-color: #b9e17e;
+      color: #1f3f32;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out;
+    }
+
+    button:hover {
+      background-color: #a2c65f;
+    }
+
+    a {
+      color: #b9e17e;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 400px) {
+      .login-container {
+        padding: 20px 15px;
+      }
+
+      input, button {
+        font-size: 14px;
+      }
+
+      h1 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Post Harvest Details</h1>
+    <form onsubmit="submitPost(event)" enctype="multipart/form-data">
+      <!-- Username is not shown to user anymore -->
+      <input type="text" placeholder="Crop Name" required id="crop">
+      <input type="text" placeholder="Quantity (e.g., 50kg)" required id="quantity">
+      <input type="text" placeholder="Price (e.g., Rs 100/kg)" required id="price">
+      <input type="file" accept="image/*" required id="image" />
+      <button type="submit">Post</button>
+    </form>
+    <p><a href="view-posts.html">← View All Posts</a></p>
+  </div>
+
+  <script>
+    async function submitPost(e) {
+      e.preventDefault();
+
+      const loggedInUser = localStorage.getItem('loggedInUser');  // Get logged-in user
+
+      if (!loggedInUser) {
+        alert('❌ You must be logged in to create a post.');
+        window.location.href = 'index.html';  // Redirect to login if not logged in
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('user', loggedInUser); // ✅ Set user from session/localStorage
+      formData.append('crop', document.getElementById('crop').value);
+      formData.append('quantity', document.getElementById('quantity').value);
+      formData.append('price', document.getElementById('price').value);
+      formData.append('image', document.getElementById('image').files[0]);
+
+      const res = await fetch('/api/post', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+      alert(data.message || data.error);
+      if (res.ok) window.location.href = 'view-posts.html';
+    }
+  </script>
+</body>
+</html>
